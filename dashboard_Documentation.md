@@ -1,3 +1,65 @@
+### 📄 c:\Users\Administrator\Desktop\dashboard\main.py
+*Saved at: 11/18/2025, 11:45:26 AM*
+
+**[ADDED]**
+```
+1     import streamlit as st  
+2     import pandas as pd 
+3     import plotly.express as px 
+4     
+5     # Title
+6     st.title("My Employee Dashboard")
+7     st.write("Hello Rack! Your Dashboard is ready")
+8     
+9     # Load Data
+10    df = pd.read_csv("Salary_Dataset.csv")
+11    
+12    # Sidebar Filter
+13    City = df['City'].unique()
+14    selected_city = st.sidebar.selectbox("Select City", City)
+15    
+16    # Filtered Data
+17    filtered_df = df[df["City"] == selected_city]
+18    
+19    # KPI Metrics
+20    avg_salary = filtered_df["Salary_USD"].mean()
+21    max_salary = filtered_df["Salary_USD"].max()
+22    min_salary = filtered_df["Salary_USD"].min()
+23    
+24    col1, col2, col3 = st.columns(3)
+25    col1.metric("Average Salary", f"${avg_salary:,.0f}")
+26    col2.metric("Highest Salary", f"${max_salary:,.0f}")
+27    col3.metric("Lowest Salary", f"${min_salary:,.0f}")
+28    
+29    # Filtered Data Preview
+30    st.write("### Filtered Employee Data")
+31    st.dataframe(filtered_df)
+32    
+33    # Charts in Columns
+34    c1, c2 = st.columns(2)
+35    
+36    with c1:
+37        fig1 = px.line(filtered_df, x="Age", y="Salary_USD", title="Salary by Age")
+38        st.plotly_chart(fig1)
+39    
+40    with c2:
+41        fig2 = px.histogram(filtered_df, x="Age", title="Age Distribution")
+42        st.plotly_chart(fig2)
+43    
+44    # Second Row of Charts (Optional)
+45    c3, c4 = st.columns(2)
+46    
+47    with c3:
+48        fig3 = px.box(filtered_df, x="Gender", y="Salary_USD", title="Salary by Gender")
+49        st.plotly_chart(fig3)
+50    
+51    with c4:
+52        fig4 = px.bar(filtered_df, x="Education", y="Salary_USD", title="Salary by Education")
+53        st.plotly_chart(fig4)
+```
+
+---
+
 ### 📄 c:\Users\Administrator\Desktop\dashboard\app.py
 *Saved at: 11/18/2025, 11:18:04 AM*
 
