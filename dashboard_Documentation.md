@@ -1,4 +1,254 @@
 ### 📄 c:\Users\Administrator\Desktop\dashboard\app.py
+*Saved at: 11/18/2025, 11:18:04 AM*
+
+**[REMOVED]**
+```
+(from line ~20)
+df = load_data("data/Salary_Dataset.csv")
+
+```
+**[ADDED]**
+```
+20    df = load_data("Salary_Dataset.csv")
+```
+
+---
+
+### 📄 c:\Users\Administrator\Desktop\dashboard\app.py
+*Saved at: 11/18/2025, 11:17:33 AM*
+
+**[REMOVED]**
+```
+(from line ~1)
+import streamlit as st  
+import pandas as pd 
+st.title("My Employee Dashboard")
+st.write("Hello Rack! Your Dashboard is ready")
+
+```
+**[ADDED]**
+```
+1     import streamlit as st
+2     import pandas as pd
+3     import plotly.express as px
+4     import numpy as np
+```
+**[ADDED]**
+```
+6     st.set_page_config(page_title="Employee Dashboard", layout="wide")
+```
+**[REMOVED]**
+```
+(from line ~8)
+df=pd.read_csv("Salary_Dataset.csv")
+st.write("### Raw Data Preview")
+st.dataframe(df)
+st.table(df.head(5))
+City=df['City'].unique()
+selected_city=st.selectbox("Select City", City)
+filtered_df =df[df["City"]==selected_city  ]
+st.write("### Filtered Data")
+
+```
+**[ADDED]**
+```
+8     st.title("Employee Dashboard")
+9     st.write("Hello Rack! Your dashboard is ready")
+```
+**[REMOVED]**
+```
+(from line ~11)
+st.dataframe(filtered_df)
+
+```
+**[ADDED]**
+```
+11    @st.cache_data
+12    def load_data(path):
+13        df = pd.read_csv(path)
+14        # basic cleaning
+15        df['Salary_USD'] = pd.to_numeric(df['Salary_USD'], errors='coerce')
+16        df['Age'] = pd.to_numeric(df['Age'], errors='coerce')
+17        df.dropna(subset=['Salary_USD','Age'], inplace=True)
+18        return df
+```
+**[REMOVED]**
+```
+(from line ~20)
+import plotly.express as px 
+fig = px.line(filtered_df, x="Age", y="Salary_USD", title="Salary by Age")
+
+```
+**[ADDED]**
+```
+20    df = load_data("data/Salary_Dataset.csv")
+```
+**[REMOVED]**
+```
+(from line ~22)
+st.plotly_chart(fig)
+
+fig =px.histogram(df, x="Age", )
+
+st.plotly_chart(fig)
+
+import plotly.express as px
+
+fig = px.scatter(df, x="Age", y="Salary_USD", color="City",
+                 hover_data=['Education', 'Gender'],
+                 title="Salary vs Age by City")
+st.plotly_chart(fig, use_container_width=True)
+# sidebar controls
+
+```
+**[ADDED]**
+```
+22    # Sidebar filters
+```
+**[REMOVED]**
+```
+(from line ~24)
+cities = df['City'].sort_values().unique()
+selected_city = st.sidebar.selectbox("City", options=["All"] + list(cities))
+
+
+```
+**[ADDED]**
+```
+24    cities = ["All"] + sorted(df['City'].dropna().unique().tolist())
+25    selected_city = st.sidebar.selectbox("City", cities)
+```
+**[REMOVED]**
+```
+(from line ~27)
+age_range = st.sidebar.slider("Age range", min_age, max_age, (25, 45))
+
+```
+**[ADDED]**
+```
+27    age_range = st.sidebar.slider("Age range", min_age, max_age, (min_age, max_age))
+28    education_opts = ["All"] + sorted(df['Education'].dropna().unique().tolist())
+29    selected_education = st.sidebar.selectbox("Education", education_opts)
+```
+**[REMOVED]**
+```
+(from line ~31)
+# apply filters
+
+```
+**[ADDED]**
+```
+31    # Apply filters
+```
+**[ADDED]**
+```
+35    if selected_education != "All":
+36        filtered = filtered[filtered['Education'] == selected_education]
+```
+**[REMOVED]**
+```
+(from line ~39)
+st.write(f"Filtered rows: {len(filtered)}")
+st.dataframe(filtered.head(50))
+
+```
+**[ADDED]**
+```
+39    # Metrics
+40    col1, col2, col3, col4 = st.columns([1,1,1,1])
+41    col1.metric("Employees", len(filtered))
+42    col2.metric("Avg Salary", f"${filtered['Salary_USD'].mean():.2f}")
+43    col3.metric("Median Salary", f"${filtered['Salary_USD'].median():.2f}")
+44    col4.metric("Avg Age", f"{filtered['Age'].mean():.1f}")
+45    
+46    # Charts
+47    with st.expander("Charts"):
+48        fig1 = px.histogram(filtered, x="Salary_USD", nbins=30, title="Salary Distribution")
+49        st.plotly_chart(fig1, use_container_width=True)
+50    
+51        fig2 = px.scatter(filtered, x="Age", y="Salary_USD", color="Education",
+52                          hover_data=['City', 'Gender'], title="Salary vs Age")
+53        st.plotly_chart(fig2, use_container_width=True)
+54    
+55        # group by education bar chart
+56        edu_group = filtered.groupby("Education")['Salary_USD'].mean().reset_index().sort_values("Salary_USD", ascending=False)
+57        fig3 = px.bar(edu_group, x="Education", y="Salary_USD", title="Avg Salary by Education")
+58        st.plotly_chart(fig3, use_container_width=True)
+59    
+60    # Data preview and download
+61    st.write("### Filtered Data (first 200 rows)")
+62    st.dataframe(filtered.head(200))
+63    
+64    csv = filtered.to_csv(index=False).encode('utf-8')
+65    st.download_button("Download filtered data", csv, "filtered_data.csv", "text/csv")
+```
+
+---
+
+### 📄 c:\Users\Administrator\Desktop\dashboard\app.py
+*Saved at: 11/18/2025, 11:03:12 AM*
+
+**[ADDED]**
+```
+33    # sidebar controls
+34    st.sidebar.header("Filters")
+35    cities = df['City'].sort_values().unique()
+36    selected_city = st.sidebar.selectbox("City", options=["All"] + list(cities))
+37    
+38    min_age, max_age = int(df['Age'].min()), int(df['Age'].max())
+39    age_range = st.sidebar.slider("Age range", min_age, max_age, (25, 45))
+40    
+41    # apply filters
+42    filtered = df.copy()
+43    if selected_city != "All":
+44        filtered = filtered[filtered['City'] == selected_city]
+45    filtered = filtered[(filtered['Age'] >= age_range[0]) & (filtered['Age'] <= age_range[1])]
+46    
+47    st.write(f"Filtered rows: {len(filtered)}")
+48    st.dataframe(filtered.head(50))
+```
+
+---
+
+### 📄 c:\Users\Administrator\Desktop\dashboard\app.py
+*Saved at: 11/18/2025, 11:01:30 AM*
+
+**[REMOVED]**
+```
+(from line ~25)
+st.plotly_chart(fig)
+```
+**[ADDED]**
+```
+25    st.plotly_chart(fig)
+26    
+27    import plotly.express as px
+28    
+29    fig = px.scatter(df, x="Age", y="Salary_USD", color="City",
+30                     hover_data=['Education', 'Gender'],
+31                     title="Salary vs Age by City")
+32    st.plotly_chart(fig, use_container_width=True)
+```
+
+---
+
+### 📄 c:\Users\Administrator\Desktop\dashboard\app.py
+*Saved at: 11/18/2025, 11:00:14 AM*
+
+**[REMOVED]**
+```
+(from line ~10)
+
+
+```
+**[ADDED]**
+```
+10    st.table(df.head(5))
+```
+
+---
+
+### 📄 c:\Users\Administrator\Desktop\dashboard\app.py
 *Saved at: 11/18/2025, 10:57:04 AM*
 
 **[ADDED]**
